@@ -6,9 +6,10 @@ int anzahlPins = sizeof(meinePins) / sizeof(meinePins[0]);
 const int buttonHelligKeitPin = 13;
 const int buttonBreitePin = 12;
 
+unsigned long letzteAenderung = 0;
 int breite = 1;
 int stufe = 0;
-int pwmStates[] = {20, 68, 170, 255};
+int pwmStates[] = {6, 68, 170, 255};
 void setup()
 {
 
@@ -30,23 +31,31 @@ void loop()
       analogWrite(meinePins[(i + j) % anzahlPins], pwmStates[stufe]);
     }
 
-    for (int w = 0; w < 50; w++)
+    for (int w = 0; w < 5; w++)
     {
-      delay(10);
+      delay(100);
       if (digitalRead(buttonHelligKeitPin) == LOW)
       {
-        stufe++;
-        if (stufe > 4)
+        if (millis() - letzteAenderung > 50)
         {
-          stufe = 0;
+          letzteAenderung = millis();
+          stufe++;
+          if (stufe > 3)
+          {
+            stufe = 0;
+          }
         }
       }
       if (digitalRead(buttonBreitePin) == LOW)
       {
-        breite++;
-        if (breite > anzahlPins)
+        if (millis() - letzteAenderung > 50)
         {
-          breite = 1;
+          breite++;
+          letzteAenderung = millis();
+          if (breite > anzahlPins)
+          {
+            breite = 1;
+          }
         }
 
         for (int k = 0; k < anzahlPins; k++)
